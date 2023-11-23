@@ -6,7 +6,7 @@ const cors = require('cors');
 const expressSession = require('express-session');
 const FileStore = require('session-file-store')(expressSession);
 
-// const apiRouter = require('./routers/api.router');
+const apiRouter = require('./routers/api.router');
 
 const { PORT, SECRET_KEY_SESSION } = process.env;
 const corsOptions = {
@@ -36,7 +36,7 @@ app.use(cors(corsOptions));
 
 app.use(express.static(path.join(process.cwd(), 'storage')));
 
-// app.use("/api", apiRouter);
+app.use('/api', apiRouter);
 
 app.listen(PORT, () => {
   console.log(`Server has been started on ${PORT}`);
