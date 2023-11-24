@@ -9,6 +9,7 @@ const {
   activate,
   refresh,
   users,
+  test,
 } = require('../controllers/auth-controller');
 
 module.exports = authRouter
@@ -22,4 +23,5 @@ module.exports = authRouter
   .post('/logout', logout)
   .get('/activate/:link', activate)
   .get('/refresh', refresh)
-  .get('/users', users);
+  .get('/users', users)
+  .get('/test', test);

@@ -1,6 +1,7 @@
 const { validationResult } = require('express-validator');
 const userService = require('../service/user-service');
 const ApiError = require('../exceptions/api-error');
+const { User } = require('../../db/models');
 
 module.exports.register = async (req, res, next) => {
   try {
@@ -79,6 +80,15 @@ module.exports.refresh = async (req, res, next) => {
 module.exports.users = async (req, res, next) => {
   try {
     res.json({ message: 'Удача' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports.test = async (req, res, next) => {
+  try {
+    const users = await User.findAll();
+    res.json(users);
   } catch (err) {
     next(err);
   }

@@ -8,9 +8,9 @@ const apiRouter = require('./routers/api.router');
 const errorMiddleware = require('./middlewares/error-middlewares');
 
 const { PORT, CORS_ORIGIN } = process.env;
-console.log('env', process.env);
+
 const corsOptions = {
-  origin: [CORS_ORIGIN],
+  origin: ['https://xll792-3000.csb.app'],
   credentials: true,
 };
 const app = express();
