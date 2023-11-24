@@ -8,21 +8,23 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      login: {
+      name: {
         type: Sequelize.STRING,
-        allowNull: false,
+      },
+      email: {
+        type: Sequelize.STRING,
         unique: true,
+      },
+      isActivated: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+      },
+      activationLink: {
+        type: Sequelize.STRING,
       },
       password: {
         type: Sequelize.STRING,
         allowNull: false,
-      },
-      name: {
-        type: Sequelize.STRING,
-      },
-      isAdmin: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false,
       },
       createdAt: {
         allowNull: false,

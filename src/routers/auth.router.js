@@ -9,7 +9,7 @@ const {
   activate,
   refresh,
   users,
-} = require('../controllers/authController');
+} = require('../controllers/auth-controller');
 
 module.exports = authRouter
   .post(

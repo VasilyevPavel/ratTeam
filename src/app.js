@@ -3,12 +3,14 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
-const apiRouter = require('./src/routers/api.router.js');
-const errorMiddleware = require('./src/middlewares/error-middlewares');
+const apiRouter = require('./routers/api.router');
 
-const { PORT } = process.env;
+const errorMiddleware = require('./middlewares/error-middlewares');
+
+const { PORT, CORS_ORIGIN } = process.env;
+console.log('env', process.env);
 const corsOptions = {
-  origin: ['http://localhost:3000'],
+  origin: [CORS_ORIGIN],
   credentials: true,
 };
 const app = express();
