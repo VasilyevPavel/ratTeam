@@ -10,11 +10,7 @@ const errorMiddleware = require('./middlewares/error-middlewares');
 const { PORT, CORS_ORIGIN } = process.env;
 
 const corsOptions = {
-  origin: [
-    'https://xll792-3000.csb.app',
-    'https://localhost:3000',
-    'http://localhost:3000',
-  ],
+  origin: ['https://xll792-3000.csb.app', 'http://localhost:3000'],
   credentials: true,
 };
 const app = express();
