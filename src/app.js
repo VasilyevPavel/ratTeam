@@ -9,20 +9,29 @@ const errorMiddleware = require('./middlewares/error-middlewares');
 
 const { PORT, CORS_ORIGIN } = process.env;
 
-const corsOptions = {
-  origin: ['https://xll792-3000.csb.app', 'http://localhost:3000'],
-  credentials: true,
-};
+// const corsOptions = {
+//   origin: ['https://xll792-3000.csb.app', 'http://localhost:3000'],
+//   credentials: true,
+// };
 const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 
 app.use('/api', apiRouter);
 app.use(errorMiddleware);
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', corsOptions.origin);
+  const allowedOrigins = [
+    'https://xll792-3000.csb.app',
+    'http://localhost:3000',
+  ];
+  const origin = req.headers.origin;
+
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+
   res.header('Access-Control-Allow-Credentials', true);
   next();
 });
