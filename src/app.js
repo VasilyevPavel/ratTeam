@@ -21,6 +21,11 @@ app.use(cors(corsOptions));
 
 app.use('/api', apiRouter);
 app.use(errorMiddleware);
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', corsOptions.origin);
+  res.header('Access-Control-Allow-Credentials', true);
+  next();
+});
 
 const start = async () => {
   try {
