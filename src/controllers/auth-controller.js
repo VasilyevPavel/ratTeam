@@ -11,6 +11,7 @@ module.exports.register = async (req, res, next) => {
         ApiError.badRequestError('Ошибка при валидации', errors.array()),
       );
     }
+
     const { name, email, password } = req.body;
     const userData = await userService.registration(name, email, password);
     res.cookie('refreshToken', userData.refreshToken, {

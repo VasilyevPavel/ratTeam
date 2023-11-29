@@ -14,7 +14,7 @@ const {
 
 module.exports = authRouter
   .post(
-    '/register',
+    '/registration',
     body('email').isEmail(),
     body('password').isLength({ min: 3, max: 32 }),
     register,
@@ -23,5 +23,5 @@ module.exports = authRouter
   .post('/logout', logout)
   .get('/activate/:link', activate)
   .get('/refresh', refresh)
-  .get('/users', users)
+  .get('/users', authMiddleware, users)
   .get('/test', test);
