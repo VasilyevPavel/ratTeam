@@ -102,3 +102,13 @@ module.exports.refresh = async (refreshToken) => {
     user: userDto,
   };
 };
+
+module.exports.findByEmail = async (email) => {
+  const user = await User.findOne({ where: { email }, raw: true });
+
+  if (!user) {
+    throw ApiError.badRequestError('Пользователь не найден');
+  }
+
+  return user;
+};

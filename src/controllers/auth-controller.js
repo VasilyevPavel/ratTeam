@@ -2,6 +2,11 @@ const { validationResult } = require('express-validator');
 const userService = require('../service/user-service');
 const ApiError = require('../exceptions/api-error');
 const { User } = require('../../db/models');
+const {
+  generateResetToken,
+  validateResetToken,
+} = require('../service/token-service');
+const { sendResetPasswordMail } = require('../service/mail-service');
 
 module.exports.register = async (req, res, next) => {
   try {
@@ -77,18 +82,50 @@ module.exports.refresh = async (req, res, next) => {
   }
 };
 
-module.exports.users = async (req, res, next) => {
+module.exports.forgotPassword = async (req, res, next) => {
   try {
-    res.json({ message: 'Удача' });
+    const { email } = req.body;
+    const user = await userService.findByEmail(email);
+
+    const resetToken = generateResetToken(user.id);
+    console.log('resetToken', resetToken);
+    await sendResetPasswordMail(
+      user.email,
+      `${process.env.CLIENT_URL}/reset-password/${resetToken}`,
+    );
+
+    res
+      .status(200)
+      .json({ message: 'Инструкции по сбросу пароля отправлены на ваш email' });
   } catch (err) {
     next(err);
   }
 };
 
-module.exports.test = async (req, res, next) => {
+module.exports.resetPassword = async (req, res, next) => {
   try {
-    const users = await User.findAll();
-    res.json(users);
+    const { resetToken } = req.params;
+    const { password } = req.body;
+
+    const userId = validateResetToken(resetToken);
+    if (!userId) {
+      throw ApiError.badRequestError('Некорректный токен сброса пароля');
+    }
+
+    const user = await userService.findById(userId);
+    if (!user) {
+      throw ApiError.notFoundError('Пользователь не найден');
+    }
+
+    // Обновить пароль пользователя в базе данных
+    const hashPassword = await bcrypt.hash(password, 10);
+    user.password = hashPassword;
+    await user.save();
+
+    // Удалить использованный токен сброса пароля из базы данных (необходимо реализовать)
+    // Пример использования: await tokenService.removeToken(resetToken);
+
+    res.status(200).json({ message: 'Пароль успешно изменен' });
   } catch (err) {
     next(err);
   }

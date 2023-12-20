@@ -21,6 +21,20 @@ module.exports.sendActivationMail = async (to, link) => {
       </div>`,
   });
 };
+module.exports.sendResetPasswordMail = async (to, resetToken) => {
+  const resetLink = `${resetToken}`;
+
+  await transporter.sendMail({
+    from: process.env.SMTP_USER,
+    to,
+    subject: `Сброс пароля на ${process.env.API_URL}`,
+    text: '',
+    html: `<div>
+        <h1>Для сброса пароля перейдите по ссылке</h1>
+        <a href="${resetLink}">${resetLink}</a>
+      </div>`,
+  });
+};
 // class MailService {
 //   constructor() {
 //     this.transporter = nodemailer.createTransport({

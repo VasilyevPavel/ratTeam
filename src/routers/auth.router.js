@@ -8,13 +8,13 @@ const {
   logout,
   activate,
   refresh,
-  users,
-  test,
+  forgotPassword,
+  resetPassword,
 } = require('../controllers/auth-controller');
 
 module.exports = authRouter
   .post(
-    '/register',
+    '/registration',
     body('email').isEmail(),
     body('password').isLength({ min: 3, max: 32 }),
     register,
@@ -23,5 +23,9 @@ module.exports = authRouter
   .post('/logout', logout)
   .get('/activate/:link', activate)
   .get('/refresh', refresh)
-  .get('/users', users)
-  .get('/test', test);
+  .post('/forgot-password', body('email').isEmail(), forgotPassword)
+  .post(
+    '/reset-password/:resetToken',
+    body('password').isLength({ min: 3, max: 32 }),
+    resetPassword,
+  );
