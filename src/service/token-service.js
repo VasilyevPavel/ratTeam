@@ -66,7 +66,7 @@ module.exports = {
       console.log(error);
     }
   },
-  generateResetToken: (userId) => {
+  npgenerateResetToken: (userId) => {
     const resetToken = jwt.sign(
       { userId },
       process.env.JWT_RESET_TOKEN_SECRET,
@@ -81,7 +81,7 @@ module.exports = {
     try {
       const decodedToken = jwt.verify(
         resetToken,
-        process.env.RESET_TOKEN_SECRET,
+        process.env.JWT_RESET_TOKEN_SECRET,
       );
       return decodedToken.userId;
     } catch (err) {

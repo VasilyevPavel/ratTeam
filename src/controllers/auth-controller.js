@@ -112,18 +112,10 @@ module.exports.resetPassword = async (req, res, next) => {
       throw ApiError.badRequestError('Некорректный токен сброса пароля');
     }
 
-    const user = await userService.findById(userId);
+    const user = await userService.findByIdAndChangePassword(userId, password);
     if (!user) {
       throw ApiError.notFoundError('Пользователь не найден');
     }
-
-    // Обновить пароль пользователя в базе данных
-    const hashPassword = await bcrypt.hash(password, 10);
-    user.password = hashPassword;
-    await user.save();
-
-    // Удалить использованный токен сброса пароля из базы данных (необходимо реализовать)
-    // Пример использования: await tokenService.removeToken(resetToken);
 
     res.status(200).json({ message: 'Пароль успешно изменен' });
   } catch (err) {

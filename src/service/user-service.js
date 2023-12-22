@@ -112,3 +112,17 @@ module.exports.findByEmail = async (email) => {
 
   return user;
 };
+
+module.exports.findByIdAndChangePassword = async (id, password) => {
+  const user = await User.findOne({ where: { id } });
+  if (!user) {
+    throw ApiError.badRequestError('Пользователь не найден');
+  }
+
+  const hashPassword = await bcrypt.hash(password, 10);
+
+  user.password = hashPassword;
+  await user.save();
+
+  return user;
+};
