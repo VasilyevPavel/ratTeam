@@ -86,6 +86,7 @@ module.exports.refresh = async (refreshToken) => {
   if (!refreshToken) {
     throw ApiError.unauthorizedError();
   }
+
   const userData = await validateRefrshToken(refreshToken);
   const tokenFromDb = await findToken(refreshToken);
 
@@ -102,7 +103,22 @@ module.exports.refresh = async (refreshToken) => {
     user: userDto,
   };
 };
+module.exports.findUser = async (refreshToken) => {
+  if (!refreshToken) {
+    throw ApiError.unauthorizedError();
+  }
+  const userData = await validateRefrshToken(refreshToken);
+  const tokenFromDb = await findToken(refreshToken);
 
+  if (!userData || !tokenFromDb) {
+    throw ApiError.unauthorizedError();
+  }
+  const user = await User.findByPk(userData.id);
+  const userDto = createUserDto(user);
+  return {
+    user: userDto,
+  };
+};
 module.exports.findByEmail = async (email) => {
   const user = await User.findOne({ where: { email }, raw: true });
 

@@ -10,6 +10,7 @@ const {
   refresh,
   forgotPassword,
   resetPassword,
+  getUser,
 } = require('../controllers/auth-controller');
 
 module.exports = authRouter
@@ -23,6 +24,8 @@ module.exports = authRouter
   .post('/logout', logout)
   .get('/activate/:link', activate)
   .get('/refresh', refresh)
+  .get('/get-user', getUser)
+
   .post('/forgot-password', body('email').isEmail(), forgotPassword)
   .post(
     '/reset-password/:resetToken',

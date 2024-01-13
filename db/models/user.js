@@ -9,6 +9,19 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       this.hasOne(models.Token, { foreignKey: 'user_id' });
+      this.hasMany(models.PostLike, {
+        foreignKey: 'user_id',
+        onDelete: 'CASCADE',
+      });
+      this.hasMany(models.CommentLike, {
+        foreignKey: 'user_id',
+        onDelete: 'CASCADE',
+      });
+      this.hasMany(models.Comment, {
+        foreignKey: 'user_id',
+        onDelete: 'CASCADE',
+      });
+      this.hasMany(models.Post, { foreignKey: 'user_id', onDelete: 'CASCADE' });
     }
   }
   User.init(
