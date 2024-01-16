@@ -1,13 +1,12 @@
 const userService = require('../service/user-service');
 const ApiError = require('../exceptions/api-error');
-const { Post, PostLike, Comment } = require('../../db/models');
+const { Post, PostLike, Comment, User } = require('../../db/models');
 const { where } = require('sequelize');
 
 module.exports.create = async (req, res, next) => {
   try {
     const { header, body } = req.body.postData;
-    console.log('title', header);
-    console.log('content', body);
+
     const { refreshToken } = req.cookies;
     const userData = await userService.findUser(refreshToken);
     await Post.create({
@@ -29,12 +28,80 @@ module.exports.getUserPosts = async (req, res, next) => {
       where: {
         user_id: id,
       },
-      include: [PostLike, Comment],
+      include: [PostLike, Comment, User],
+      order: [['createdAt', 'DESC']],
     });
 
-    console.log('posts', posts);
     res.status(200).json(posts);
   } catch (err) {
+    next(err);
+  }
+};
+module.exports.getAllPosts = async (req, res, next) => {
+  try {
+    const posts = await Post.findAll({
+      include: [PostLike, Comment, User],
+      order: [['createdAt', 'DESC']],
+    });
+
+    res.status(200).json(posts);
+  } catch (err) {
+    next(err);
+  }
+};
+module.exports.getOnePost = async (req, res, next) => {
+  try {
+    const { postId } = req.params;
+
+    const post = await Post.findOne({
+      where: {
+        id: postId,
+      },
+      include: [PostLike, Comment, User],
+    });
+    if (!post) {
+      res.status(200).json('Нет такого поста');
+    }
+    console.log('post', post);
+    res.status(200).json(post);
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports.setLike = async (req, res, next) => {
+  try {
+    const { userId, postId } = req.body;
+
+    const postExists = await Post.findByPk(postId);
+    if (!postExists) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    const userExists = await User.findByPk(userId);
+    if (!userExists) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const existingLike = await PostLike.findOne({
+      where: {
+        user_id: userId,
+        post_id: postId,
+      },
+    });
+
+    if (!existingLike) {
+      await PostLike.create({
+        user_id: userId,
+        post_id: postId,
+      });
+      res.status(200).json({ message: 'Like added successfully' });
+    } else {
+      await existingLike.destroy();
+      res.status(200).json({ message: 'Like removed successfully' });
+    }
+  } catch (err) {
+    console.error(err);
     next(err);
   }
 };

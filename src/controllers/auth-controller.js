@@ -87,7 +87,7 @@ module.exports.getUser = async (req, res, next) => {
   try {
     const { refreshToken } = req.cookies;
     const userData = await userService.findUser(refreshToken);
-    console.log('userData', userData);
+
     res.status(200).json(userData);
   } catch (err) {
     next(err);
@@ -100,7 +100,7 @@ module.exports.forgotPassword = async (req, res, next) => {
     const user = await userService.findByEmail(email);
 
     const resetToken = generateResetToken(user.id);
-    console.log('resetToken', resetToken);
+
     await sendResetPasswordMail(
       user.email,
       `${process.env.CLIENT_URL}/reset-password/${resetToken}`,

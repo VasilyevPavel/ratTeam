@@ -17,9 +17,10 @@ module.exports = {
           },
           key: 'id',
         },
+        onDelete: 'CASCADE',
       },
       refreshToken: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         allowNull: false,
       },
       createdAt: {
