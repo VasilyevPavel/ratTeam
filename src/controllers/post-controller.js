@@ -1,7 +1,6 @@
 const userService = require('../service/user-service');
 const ApiError = require('../exceptions/api-error');
-const { Post, PostLike, Comment, User } = require('../../db/models');
-const { where } = require('sequelize');
+const { Post, PostLike, Comment, User, Image } = require('../../db/models');
 
 module.exports.create = async (req, res, next) => {
   try {
@@ -52,17 +51,17 @@ module.exports.getAllPosts = async (req, res, next) => {
 module.exports.getOnePost = async (req, res, next) => {
   try {
     const { postId } = req.params;
-
+    console.log('postId', postId);
     const post = await Post.findOne({
       where: {
         id: postId,
       },
       include: [PostLike, Comment, User],
     });
-    if (!post) {
-      res.status(200).json('Нет такого поста');
-    }
-    console.log('post', post);
+    // if (!post) {
+    //   res.status(200).json('Нет такого поста');
+    // }
+    // console.log('post', post);
     res.status(200).json(post);
   } catch (err) {
     next(err);

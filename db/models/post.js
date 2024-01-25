@@ -14,12 +14,14 @@ module.exports = (sequelize, DataTypes) => {
       });
       this.hasMany(models.Comment, { foreignKey: 'post_id' });
       this.hasMany(models.PostLike, { foreignKey: 'post_id' });
+      this.hasMany(models.Image, { foreignKey: 'post_id' });
     }
   }
   Post.init(
     {
       header: DataTypes.STRING,
       body: DataTypes.STRING,
+      isPosted: DataTypes.BOOLEAN,
     },
     {
       sequelize,
