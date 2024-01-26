@@ -2,7 +2,11 @@ const imageRouter = require('express').Router();
 
 const setFolderName = require('../middlewares/setFolderName');
 const { upload } = require('../lib/multer');
-const { uploadPhoto, deletePhoto } = require('../controllers/image-controller');
+const {
+  uploadPhoto,
+  deletePhoto,
+  updateImage,
+} = require('../controllers/image-controller');
 
 module.exports = imageRouter
   .post(
@@ -11,4 +15,5 @@ module.exports = imageRouter
     upload.array('photos', 12),
     uploadPhoto,
   )
+  .put('/update-image/:postId/imageId', updateImage)
   .delete('/delete-photo/:id', deletePhoto);

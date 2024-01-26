@@ -6,14 +6,28 @@ module.exports.create = async (req, res, next) => {
   try {
     const { header, body } = req.body.postData;
 
+    const imagesRegex =
+      /images\/post\/([^\/]+)\.(jpg|jpeg|png|gif|bmp|tiff)\b/g;
+
+    const images = body.match(imagesRegex);
+
+    console.log('images', images);
     const { refreshToken } = req.cookies;
     const userData = await userService.findUser(refreshToken);
-    await Post.create({
+    const post = await Post.create({
       user_id: userData.user.id,
       header,
       body,
     });
-
+    if (images) {
+      images.forEach(async (image) => {
+        console.log('image', image);
+        const img = await Image.findOne({ where: { name: image } });
+        console.log('img', img);
+        img.post_id = post.id;
+        await img.save();
+      });
+    }
     res.status(201).json({ message: 'Post created successfully' });
   } catch (err) {
     next(err);
@@ -27,7 +41,7 @@ module.exports.getUserPosts = async (req, res, next) => {
       where: {
         user_id: id,
       },
-      include: [PostLike, Comment, User],
+      include: [PostLike, Comment, User, Image],
       order: [['createdAt', 'DESC']],
     });
 
@@ -39,7 +53,7 @@ module.exports.getUserPosts = async (req, res, next) => {
 module.exports.getAllPosts = async (req, res, next) => {
   try {
     const posts = await Post.findAll({
-      include: [PostLike, Comment, User],
+      include: [PostLike, Comment, User, Image],
       order: [['createdAt', 'DESC']],
     });
 

@@ -23,14 +23,24 @@ module.exports.uploadPhoto = async (req, res, next) => {
     next(err);
   }
 };
+module.exports.updateImage = async (req, res, next) => {
+  try {
+    const { postId, imageId } = req.params;
+
+    const image = await Image.findOne({ where: { id: imageId }, raw: true });
+    await image.update({ post_id: postId });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
 
 module.exports.deletePhoto = async (req, res, next) => {
   try {
     const { id } = req.params;
     const image = await Image.findOne({ where: { id }, raw: true });
-    console.log('ididid', image);
+
     const name = image.name.match(/\/([^\/]+)$/)[1];
-    console.log('name', image.name);
 
     await deletePhoto(image.name);
     await Image.destroy({ where: { id } });
