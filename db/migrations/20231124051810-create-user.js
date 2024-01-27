@@ -19,6 +19,14 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
       },
+      isAdmin: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+      },
+      avatar: {
+        type: Sequelize.TEXT,
+        defaultValue: '',
+      },
       activationLink: {
         type: Sequelize.STRING,
       },

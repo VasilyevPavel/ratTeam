@@ -3,4 +3,6 @@ module.exports.createUserDto = (model) => ({
   name: model.name,
   email: model.email,
   isActivated: model.isActivated,
+  isAdmin: model.isAdmin,
+  avatar: model.avatar,
 });

@@ -59,7 +59,7 @@ module.exports.activate = async (activationLink) => {
 
 module.exports.login = async (email, password) => {
   const user = await User.findOne({ where: { email }, raw: true });
-  console.log('Юзер', user);
+
   if (!user) {
     throw ApiError.badRequestError('Пользователь не найден');
   }
@@ -68,7 +68,7 @@ module.exports.login = async (email, password) => {
     throw ApiError.badRequestError('Пароль не правильный');
   }
   const userDto = createUserDto(user);
-  console.log('dto', userDto);
+
   const tokens = generateTokens({ ...userDto });
   await saveToken(userDto.id, tokens.refreshToken);
   return {

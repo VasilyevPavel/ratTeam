@@ -17,12 +17,17 @@ module.exports = {
           },
           key: 'id',
         },
+        onDelete: 'CASCADE',
       },
       header: {
         type: Sequelize.STRING,
       },
       body: {
         type: Sequelize.TEXT,
+      },
+      isPosted: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
       },
       createdAt: {
         allowNull: false,
