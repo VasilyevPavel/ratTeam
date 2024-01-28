@@ -4,7 +4,7 @@ const { Post, PostLike, Comment, User, Image } = require('../../db/models');
 
 module.exports.create = async (req, res, next) => {
   try {
-    const { header, body } = req.body.postData;
+    const { header, body, isPosted } = req.body.postData;
 
     const imagesRegex =
       /images\/post\/([^\/]+)\.(jpg|jpeg|png|gif|bmp|tiff)\b/g;
@@ -18,6 +18,7 @@ module.exports.create = async (req, res, next) => {
       user_id: userData.user.id,
       header,
       body,
+      isPosted,
     });
     if (images) {
       images.forEach(async (image) => {
@@ -28,7 +29,13 @@ module.exports.create = async (req, res, next) => {
         await img.save();
       });
     }
-    res.status(201).json({ message: 'Post created successfully' });
+    const postToFront = await Post.findOne({
+      where: {
+        id: post.id,
+      },
+      include: [PostLike, Comment, User, Image],
+    });
+    res.status(201).json(postToFront);
   } catch (err) {
     next(err);
   }
