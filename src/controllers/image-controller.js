@@ -23,6 +23,20 @@ module.exports.uploadPhoto = async (req, res, next) => {
     next(err);
   }
 };
+
+module.exports.getPostPhotos = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const images = await Image.findAll({ where: { post_id: id }, raw: true });
+    console.log('images', images);
+    res.status(200).json(images);
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
 module.exports.updateImage = async (req, res, next) => {
   try {
     const { postId, imageId } = req.params;

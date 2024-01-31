@@ -4,12 +4,11 @@ const { Post, PostLike, Comment, User, Image } = require('../../db/models');
 
 module.exports.create = async (req, res, next) => {
   try {
-    const { header, body, isPosted } = req.body.postData;
+    const { header, body, isPosted, images } = req.body.postData;
 
-    const imagesRegex =
-      /images\/post\/([^\/]+)\.(jpg|jpeg|png|gif|bmp|tiff)\b/g;
+    // const imagesRegex = /\[image\s+src=(\d+)\s+title=([^\]]*?)\]/g;
 
-    const images = body.match(imagesRegex);
+    // const images = body.match(imagesRegex);
 
     console.log('images', images);
     const { refreshToken } = req.cookies;
@@ -20,6 +19,44 @@ module.exports.create = async (req, res, next) => {
       body,
       isPosted,
     });
+    if (images) {
+      images.forEach(async (image) => {
+        console.log('image', image);
+        const img = await Image.findOne({ where: { id: image.id } });
+        console.log('img', img);
+        img.post_id = post.id;
+        await img.save();
+      });
+    }
+    const postToFront = await Post.findOne({
+      where: {
+        id: post.id,
+      },
+      include: [PostLike, Comment, User, Image],
+    });
+    res.status(201).json(postToFront);
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports.update = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { header, body, isPosted } = req.body.postData;
+
+    const imagesRegex =
+      /images\/post\/([^\/]+)\.(jpg|jpeg|png|gif|bmp|tiff)\b/g;
+
+    const images = body.match(imagesRegex);
+    const post = await Post.findOne({ where: { id } });
+
+    post.update({
+      header,
+      body,
+      isPosted,
+    });
+    post.save();
     if (images) {
       images.forEach(async (image) => {
         console.log('image', image);
@@ -77,7 +114,7 @@ module.exports.getOnePost = async (req, res, next) => {
       where: {
         id: postId,
       },
-      include: [PostLike, Comment, User],
+      include: [PostLike, Comment, User, Image],
     });
     // if (!post) {
     //   res.status(200).json('Нет такого поста');

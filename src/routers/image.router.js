@@ -6,6 +6,7 @@ const {
   uploadPhoto,
   deletePhoto,
   updateImage,
+  getPostPhotos,
 } = require('../controllers/image-controller');
 
 module.exports = imageRouter
@@ -15,5 +16,6 @@ module.exports = imageRouter
     upload.array('photos', 12),
     uploadPhoto,
   )
+  .get('/get-post-photos/:id', getPostPhotos)
   .put('/update-image/:postId/imageId', updateImage)
   .delete('/delete-photo/:id', deletePhoto);

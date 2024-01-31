@@ -11,9 +11,9 @@ const transporter = nodemailer.createTransport({
 });
 module.exports.sendActivationMail = async (to, link) => {
   await transporter.sendMail({
-    from: process.env.SMTP_USER,
+    from: '"Test App" <' + process.env.SMTP_USER + '>',
     to,
-    subject: `Активация аккаунта на${process.env.API_URL}`,
+    subject: `Активация аккаунта на ${process.env.API_URL}`,
     text: '',
     html: `<div>
         <h1>Для активации перейдите по ссылке</h1>
@@ -25,7 +25,7 @@ module.exports.sendResetPasswordMail = async (to, resetToken) => {
   const resetLink = `${resetToken}`;
 
   await transporter.sendMail({
-    from: process.env.SMTP_USER,
+    from: '"Test App" <' + process.env.SMTP_USER + '>',
     to,
     subject: `Сброс пароля на ${process.env.API_URL}`,
     text: '',

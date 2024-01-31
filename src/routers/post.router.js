@@ -9,12 +9,14 @@ const {
   getAllPosts,
   getOnePost,
   uploadPhoto,
+  update,
 } = require('../controllers/post-controller');
 const setFolderName = require('../middlewares/setFolderName');
 const upload = require('../lib/multer');
 
 module.exports = postRouter
   .post('/create', create)
+  .patch(`/update/:id`, update)
   .get('/get-posts/:id', getUserPosts)
   .post('/set-like', setLike)
   .get('/get-all-posts', getAllPosts)
