@@ -6,11 +6,6 @@ module.exports.create = async (req, res, next) => {
   try {
     const { header, body, isPosted, images } = req.body.postData;
 
-    // const imagesRegex = /\[image\s+src=(\d+)\s+title=([^\]]*?)\]/g;
-
-    // const images = body.match(imagesRegex);
-
-    console.log('images', images);
     const { refreshToken } = req.cookies;
     const userData = await userService.findUser(refreshToken);
     const post = await Post.create({
@@ -43,12 +38,8 @@ module.exports.create = async (req, res, next) => {
 module.exports.update = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { header, body, isPosted } = req.body.postData;
+    const { header, body, isPosted, images } = req.body.postData;
 
-    const imagesRegex =
-      /images\/post\/([^\/]+)\.(jpg|jpeg|png|gif|bmp|tiff)\b/g;
-
-    const images = body.match(imagesRegex);
     const post = await Post.findOne({ where: { id } });
 
     post.update({
@@ -60,7 +51,7 @@ module.exports.update = async (req, res, next) => {
     if (images) {
       images.forEach(async (image) => {
         console.log('image', image);
-        const img = await Image.findOne({ where: { name: image } });
+        const img = await Image.findOne({ where: { id: image.id } });
         console.log('img', img);
         img.post_id = post.id;
         await img.save();
@@ -85,7 +76,15 @@ module.exports.getUserPosts = async (req, res, next) => {
       where: {
         user_id: id,
       },
-      include: [PostLike, Comment, User, Image],
+      include: [
+        PostLike,
+        Comment,
+        User,
+        {
+          model: Image,
+          order: [['id', 'DESC']],
+        },
+      ],
       order: [['createdAt', 'DESC']],
     });
 
@@ -109,13 +108,27 @@ module.exports.getAllPosts = async (req, res, next) => {
 module.exports.getOnePost = async (req, res, next) => {
   try {
     const { postId } = req.params;
-    console.log('postId', postId);
+
     const post = await Post.findOne({
       where: {
         id: postId,
       },
-      include: [PostLike, Comment, User, Image],
+      include: [
+        PostLike,
+        {
+          model: Comment,
+          include: [User],
+        },
+        User,
+        {
+          model: Image,
+          order: [['id', 'ASC']],
+        },
+      ],
+      order: [['createdAt', 'DESC']],
     });
+    console.log('post', post);
+
     // if (!post) {
     //   res.status(200).json('Нет такого поста');
     // }

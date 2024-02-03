@@ -32,6 +32,16 @@ module.exports = {
       text: {
         type: Sequelize.STRING,
       },
+      parent_comment_id: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: {
+            tableName: 'Comments',
+          },
+          key: 'id',
+        },
+        onDelete: 'CASCADE',
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

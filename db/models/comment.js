@@ -14,12 +14,17 @@ module.exports = (sequelize, DataTypes) => {
       });
       this.belongsTo(models.Post, { foreignKey: 'post_id' });
       this.hasMany(models.CommentLike, { foreignKey: 'comment_id' });
+      this.hasMany(models.Comment, {
+        foreignKey: 'parent_comment_id',
+        as: 'replies',
+      });
     }
   }
   Comment.init(
     {
       user_id: DataTypes.INTEGER,
       post_id: DataTypes.INTEGER,
+      parent_comment_id: DataTypes.INTEGER,
       text: DataTypes.STRING,
     },
     {
