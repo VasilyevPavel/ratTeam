@@ -1,6 +1,13 @@
 const userService = require('../service/user-service');
 const ApiError = require('../exceptions/api-error');
-const { Post, PostLike, Comment, User, Image } = require('../../db/models');
+const {
+  Post,
+  PostLike,
+  Comment,
+  User,
+  Image,
+  CommentLike,
+} = require('../../db/models');
 
 module.exports.create = async (req, res, next) => {
   try {
@@ -117,22 +124,21 @@ module.exports.getOnePost = async (req, res, next) => {
         PostLike,
         {
           model: Comment,
-          include: [User],
+          include: [CommentLike, User],
+
+          // include: [User],
         },
+
         User,
         {
           model: Image,
-          order: [['id', 'ASC']],
         },
       ],
       order: [['createdAt', 'DESC']],
     });
+
     console.log('post', post);
 
-    // if (!post) {
-    //   res.status(200).json('Нет такого поста');
-    // }
-    // console.log('post', post);
     res.status(200).json(post);
   } catch (err) {
     next(err);

@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
   CommentLike.init(
     {
       user_id: DataTypes.INTEGER,
-      post_id: DataTypes.INTEGER,
+      comment_id: DataTypes.INTEGER,
     },
     {
       sequelize,
