@@ -145,7 +145,7 @@ module.exports.getOnePost = async (req, res, next) => {
   }
 };
 
-module.exports.setLike = async (req, res, next) => {
+module.exports.setPostLike = async (req, res, next) => {
   try {
     const { userId, postId } = req.body;
 
@@ -154,21 +154,23 @@ module.exports.setLike = async (req, res, next) => {
       return res.status(404).json({ message: 'Post not found' });
     }
 
-    const userExists = await User.findByPk(userId);
-    if (!userExists) {
+    const { refreshToken } = req.cookies;
+    const userData = await userService.findUser(refreshToken);
+
+    if (!userData) {
       return res.status(404).json({ message: 'User not found' });
     }
 
     const existingLike = await PostLike.findOne({
       where: {
-        user_id: userId,
+        user_id: userData.user.id,
         post_id: postId,
       },
     });
 
     if (!existingLike) {
       await PostLike.create({
-        user_id: userId,
+        user_id: userData.user.id,
         post_id: postId,
       });
       res.status(200).json({ message: 'Like added successfully' });

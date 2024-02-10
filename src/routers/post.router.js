@@ -5,11 +5,12 @@ const authMiddleware = require('../middlewares/auth-middlewares'); // middleware
 const {
   create,
   getUserPosts,
-  setLike,
+
   getAllPosts,
   getOnePost,
-  uploadPhoto,
+
   update,
+  setPostLike,
 } = require('../controllers/post-controller');
 const setFolderName = require('../middlewares/setFolderName');
 const upload = require('../lib/multer');
@@ -18,6 +19,6 @@ module.exports = postRouter
   .post('/create', create)
   .patch(`/update/:id`, update)
   .get('/get-posts/:id', getUserPosts)
-  .post('/set-like', setLike)
+  .post('/set-like', setPostLike)
   .get('/get-all-posts', getAllPosts)
   .get('/get-post/:postId', getOnePost);
