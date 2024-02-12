@@ -124,15 +124,11 @@ module.exports.getOnePost = async (req, res, next) => {
         PostLike,
         {
           model: Comment,
-          include: [CommentLike, User],
-
-          // include: [User],
+          include: [{ model: CommentLike }, { model: User }],
+          order: [['createdAt', 'DESC']],
         },
-
         User,
-        {
-          model: Image,
-        },
+        { model: Image },
       ],
       order: [['createdAt', 'DESC']],
     });
