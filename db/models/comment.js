@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'parent_comment_id',
         as: 'replies',
       });
+      this.hasMany(models.CommentImage, { foreignKey: 'comment_id' });
     }
   }
   Comment.init(

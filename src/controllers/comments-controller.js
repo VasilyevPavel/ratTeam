@@ -1,12 +1,14 @@
-const { Comment, CommentLike } = require('../../db/models');
+const { where } = require('sequelize');
+const { Comment, CommentLike, CommentImage } = require('../../db/models');
 const userService = require('../service/user-service');
 
 module.exports.createComment = async (req, res, next) => {
   try {
     const { post_id, parent_comment_id } = req.params;
-    const { text } = req.body;
+    const { text, commentPhotoId } = req.body;
     const { refreshToken } = req.cookies;
     const userData = await userService.findUser(refreshToken);
+    console.log('commentPhotoId', commentPhotoId);
     if (parent_comment_id) {
       const comment = await Comment.create({
         user_id: userData.user.id,
@@ -14,6 +16,15 @@ module.exports.createComment = async (req, res, next) => {
         parent_comment_id,
         text,
       });
+      if (commentPhotoId) {
+        const commentPhoto = await CommentImage.findOne({
+          where: { id: commentPhotoId },
+        });
+        commentPhoto.update({
+          comment_id: comment.id,
+        });
+        commentPhoto.save();
+      }
       res.status(200).json(comment);
     } else {
       const comment = await Comment.create({
@@ -21,6 +32,16 @@ module.exports.createComment = async (req, res, next) => {
         post_id,
         text,
       });
+      if (commentPhotoId) {
+        const commentPhoto = await CommentImage.findOne({
+          where: { id: commentPhotoId },
+        });
+        commentPhoto.update({
+          comment_id: comment.id,
+        });
+        commentPhoto.save();
+      }
+
       res.status(200).json(comment);
     }
   } catch (err) {
@@ -32,7 +53,7 @@ module.exports.createComment = async (req, res, next) => {
 module.exports.createCommentReply = async (req, res, next) => {
   try {
     const { post_id, parent_comment_id } = req.params;
-    const { text } = req.body;
+    const { text, commentPhotoId } = req.body;
     const { refreshToken } = req.cookies;
     const userData = await userService.findUser(refreshToken);
     const comment = await Comment.create({
@@ -41,6 +62,17 @@ module.exports.createCommentReply = async (req, res, next) => {
       text,
       parent_comment_id,
     });
+
+    if (commentPhotoId) {
+      const commentPhoto = await CommentImage.findOne({
+        where: { id: commentPhotoId },
+      });
+      commentPhoto.update({
+        comment_id: comment.id,
+      });
+      commentPhoto.save();
+    }
+
     res.status(200).json(comment);
   } catch (err) {
     console.error(err);

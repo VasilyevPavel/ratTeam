@@ -5,8 +5,9 @@ const {
   PostLike,
   Comment,
   User,
-  Image,
+  PostImage,
   CommentLike,
+  CommentImage,
 } = require('../../db/models');
 
 module.exports.create = async (req, res, next) => {
@@ -23,9 +24,8 @@ module.exports.create = async (req, res, next) => {
     });
     if (images) {
       images.forEach(async (image) => {
-        console.log('image', image);
-        const img = await Image.findOne({ where: { id: image.id } });
-        console.log('img', img);
+        const img = await PostImage.findOne({ where: { id: image.id } });
+
         img.post_id = post.id;
         await img.save();
       });
@@ -34,7 +34,7 @@ module.exports.create = async (req, res, next) => {
       where: {
         id: post.id,
       },
-      include: [PostLike, Comment, User, Image],
+      include: [PostLike, Comment, User, PostImage],
     });
     res.status(201).json(postToFront);
   } catch (err) {
@@ -57,9 +57,8 @@ module.exports.update = async (req, res, next) => {
     post.save();
     if (images) {
       images.forEach(async (image) => {
-        console.log('image', image);
-        const img = await Image.findOne({ where: { id: image.id } });
-        console.log('img', img);
+        const img = await PostImage.findOne({ where: { id: image.id } });
+
         img.post_id = post.id;
         await img.save();
       });
@@ -68,7 +67,7 @@ module.exports.update = async (req, res, next) => {
       where: {
         id: post.id,
       },
-      include: [PostLike, Comment, User, Image],
+      include: [PostLike, Comment, User, PostImage],
     });
     res.status(201).json(postToFront);
   } catch (err) {
@@ -88,7 +87,7 @@ module.exports.getUserPosts = async (req, res, next) => {
         Comment,
         User,
         {
-          model: Image,
+          model: PostImage,
           order: [['id', 'DESC']],
         },
       ],
@@ -103,7 +102,7 @@ module.exports.getUserPosts = async (req, res, next) => {
 module.exports.getAllPosts = async (req, res, next) => {
   try {
     const posts = await Post.findAll({
-      include: [PostLike, Comment, User, Image],
+      include: [PostLike, Comment, User, PostImage],
       order: [['createdAt', 'DESC']],
     });
 
@@ -124,16 +123,18 @@ module.exports.getOnePost = async (req, res, next) => {
         PostLike,
         {
           model: Comment,
-          include: [{ model: CommentLike }, { model: User }],
+          include: [
+            { model: CommentLike },
+            { model: User },
+            { model: CommentImage },
+          ],
           order: [['createdAt', 'DESC']],
         },
         User,
-        { model: Image },
+        { model: PostImage },
       ],
       order: [['createdAt', 'DESC']],
     });
-
-    console.log('post', post);
 
     res.status(200).json(post);
   } catch (err) {

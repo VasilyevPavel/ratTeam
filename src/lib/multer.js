@@ -11,12 +11,10 @@ const upload = multer({
     bucket: process.env.BUCKET_NAME,
     acl: 'public-read',
     metadata(req, file, cb) {
-      console.log('Metadata:', file);
       cb(null, { fieldName: file.fieldname });
     },
 
     key(req, file, cb) {
-      console.log('Key:', file);
       const folderName = req.folderName || 'default_folder';
 
       cb(
