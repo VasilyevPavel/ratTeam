@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Tokens', {
+    await queryInterface.createTable('CommentLikes', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -19,10 +19,17 @@ module.exports = {
         },
         onDelete: 'CASCADE',
       },
-      refreshToken: {
-        type: Sequelize.TEXT,
-        allowNull: false,
+      comment_id: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: {
+            tableName: 'Comments',
+          },
+          key: 'id',
+        },
+        onDelete: 'CASCADE',
       },
+
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
@@ -34,6 +41,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Tokens');
+    await queryInterface.dropTable('CommentLikes');
   },
 };

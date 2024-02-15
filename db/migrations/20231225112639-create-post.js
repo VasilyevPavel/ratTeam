@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Tokens', {
+    await queryInterface.createTable('Posts', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -19,9 +19,15 @@ module.exports = {
         },
         onDelete: 'CASCADE',
       },
-      refreshToken: {
+      header: {
+        type: Sequelize.STRING,
+      },
+      body: {
         type: Sequelize.TEXT,
-        allowNull: false,
+      },
+      isPosted: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
       },
       createdAt: {
         allowNull: false,
@@ -34,6 +40,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Tokens');
+    await queryInterface.dropTable('Posts');
   },
 };

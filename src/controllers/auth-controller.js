@@ -2,6 +2,11 @@ const { validationResult } = require('express-validator');
 const userService = require('../service/user-service');
 const ApiError = require('../exceptions/api-error');
 const { User } = require('../../db/models');
+const {
+  generateResetToken,
+  validateResetToken,
+} = require('../service/token-service');
+const { sendResetPasswordMail } = require('../service/mail-service');
 
 module.exports.register = async (req, res, next) => {
   try {
@@ -65,6 +70,7 @@ module.exports.activate = async (req, res, next) => {
 module.exports.refresh = async (req, res, next) => {
   try {
     const { refreshToken } = req.cookies;
+
     const userData = await userService.refresh(refreshToken);
     res.cookie('refreshToken', userData.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
@@ -77,18 +83,56 @@ module.exports.refresh = async (req, res, next) => {
   }
 };
 
-module.exports.users = async (req, res, next) => {
+module.exports.getUser = async (req, res, next) => {
   try {
-    res.json({ message: 'Удача' });
+    const { refreshToken } = req.cookies;
+    const userData = await userService.findUser(refreshToken);
+    res.cookie('refreshToken', userData.refreshToken, {
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+    });
+    res.status(200).json(userData);
   } catch (err) {
     next(err);
   }
 };
 
-module.exports.test = async (req, res, next) => {
+module.exports.forgotPassword = async (req, res, next) => {
   try {
-    const users = await User.findAll();
-    res.json(users);
+    const { email } = req.body;
+    const user = await userService.findByEmail(email);
+
+    const resetToken = generateResetToken(user.id);
+
+    await sendResetPasswordMail(
+      user.email,
+      `${process.env.CLIENT_URL}/reset-password/${resetToken}`,
+    );
+
+    res
+      .status(200)
+      .json({ message: 'Инструкции по сбросу пароля отправлены на ваш email' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports.resetPassword = async (req, res, next) => {
+  try {
+    const { resetToken } = req.params;
+    const { password } = req.body;
+
+    const userId = validateResetToken(resetToken);
+    if (!userId) {
+      throw ApiError.badRequestError('Некорректный токен сброса пароля');
+    }
+
+    const user = await userService.findByIdAndChangePassword(userId, password);
+    if (!user) {
+      throw ApiError.notFoundError('Пользователь не найден');
+    }
+
+    res.status(200).json({ message: 'Пароль успешно изменен' });
   } catch (err) {
     next(err);
   }

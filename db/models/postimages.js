@@ -1,25 +1,25 @@
+'use strict';
 const { Model } = require('sequelize');
-
 module.exports = (sequelize, DataTypes) => {
-  class Token extends Model {
+  class PostImage extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.belongsTo(models.User, { foreignKey: 'user_id' });
+      this.belongsTo(models.Post, { foreignKey: 'post_id' });
     }
   }
-  Token.init(
+  PostImage.init(
     {
-      user_id: DataTypes.INTEGER,
-      refreshToken: DataTypes.TEXT,
+      name: DataTypes.STRING,
+      post_id: DataTypes.INTEGER,
     },
     {
       sequelize,
-      modelName: 'Token',
+      modelName: 'PostImage',
     },
   );
-  return Token;
+  return PostImage;
 };

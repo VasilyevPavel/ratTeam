@@ -66,4 +66,26 @@ module.exports = {
       console.log(error);
     }
   },
+  npgenerateResetToken: (userId) => {
+    const resetToken = jwt.sign(
+      { userId },
+      process.env.JWT_RESET_TOKEN_SECRET,
+      {
+        expiresIn: '1h',
+      },
+    );
+    return resetToken;
+  },
+
+  validateResetToken: (resetToken) => {
+    try {
+      const decodedToken = jwt.verify(
+        resetToken,
+        process.env.JWT_RESET_TOKEN_SECRET,
+      );
+      return decodedToken.userId;
+    } catch (err) {
+      return null;
+    }
+  },
 };
