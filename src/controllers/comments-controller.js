@@ -5,10 +5,13 @@ const userService = require('../service/user-service');
 module.exports.createComment = async (req, res, next) => {
   try {
     const { post_id, parent_comment_id } = req.params;
+
     const { text, commentPhotoId } = req.body;
+
     const { refreshToken } = req.cookies;
+
     const userData = await userService.findUser(refreshToken);
-    console.log('commentPhotoId', commentPhotoId);
+
     if (parent_comment_id) {
       const comment = await Comment.create({
         user_id: userData.user.id,

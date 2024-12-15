@@ -85,3 +85,19 @@ module.exports.deletePhoto = async (req, res, next) => {
     next(err);
   }
 };
+
+module.exports.deleteCommentPhoto = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const image = await CommentImage.findOne({ where: { id }, raw: true });
+
+    const name = image.name.match(/\/([^\/]+)$/)[1];
+
+    await deletePhoto(image.name);
+    await CommentImage.destroy({ where: { id } });
+    res.status(200).json({ message: 'Фото удалено' });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};

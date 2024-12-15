@@ -86,9 +86,9 @@ module.exports.refresh = async (refreshToken) => {
   if (!refreshToken) {
     throw ApiError.unauthorizedError();
   }
+  const tokenFromDb = await findToken(refreshToken);
 
   const userData = await validateRefrshToken(refreshToken);
-  const tokenFromDb = await findToken(refreshToken);
 
   if (!userData || !tokenFromDb) {
     throw ApiError.unauthorizedError();
@@ -96,6 +96,7 @@ module.exports.refresh = async (refreshToken) => {
   const user = await User.findByPk(userData.id);
   const userDto = createUserDto(user);
   const tokens = generateTokens({ ...userDto });
+
   await saveToken(userDto.id, tokens.refreshToken);
 
   return {

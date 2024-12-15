@@ -72,7 +72,8 @@ module.exports.refresh = async (req, res, next) => {
     const { refreshToken } = req.cookies;
 
     const userData = await userService.refresh(refreshToken);
-    res.cookie('refreshToken', userData.refreshToken, {
+
+    await res.cookie('refreshToken', userData.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     });
@@ -100,6 +101,7 @@ module.exports.getUser = async (req, res, next) => {
 module.exports.forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
+
     const user = await userService.findByEmail(email);
 
     const resetToken = generateResetToken(user.id);

@@ -15,6 +15,7 @@ module.exports.create = async (req, res, next) => {
     const { header, body, isPosted, images } = req.body.postData;
 
     const { refreshToken } = req.cookies;
+
     const userData = await userService.findUser(refreshToken);
     const post = await Post.create({
       user_id: userData.user.id,

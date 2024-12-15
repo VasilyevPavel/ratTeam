@@ -21,15 +21,17 @@ module.exports = {
         user_id,
       },
     });
+
     if (tokenData) {
       tokenData.refreshToken = refreshToken;
-      return tokenData.save();
+      // return tokenData.save();
+      const token = await Token.create({
+        user_id,
+        refreshToken,
+      });
+      return token;
     }
-    const token = await Token.create({
-      user_id,
-      refreshToken,
-    });
-    return token;
+    console.log('tokentoken111117777', token);
   },
 
   removeToken: async (refreshToken) => {
@@ -46,6 +48,9 @@ module.exports = {
       raw: true,
     });
 
+    if (!tokenData) {
+      throw new Error('Token data not found');
+    }
     return tokenData;
   },
 
@@ -66,7 +71,7 @@ module.exports = {
       console.log(error);
     }
   },
-  npgenerateResetToken: (userId) => {
+  generateResetToken: (userId) => {
     const resetToken = jwt.sign(
       { userId },
       process.env.JWT_RESET_TOKEN_SECRET,
