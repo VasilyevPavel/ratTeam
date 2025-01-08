@@ -1,4 +1,5 @@
-const { PostImage, CommentImage } = require('../../db/models');
+const { PostImage, CommentImage, User } = require('../../db/models');
+const userService = require('../service/user-service');
 const { deletePhoto } = require('../lib/s3');
 
 module.exports.uploadPostPhoto = async (req, res, next) => {
@@ -33,6 +34,42 @@ module.exports.uploadCommentPhoto = async (req, res, next) => {
     const image = await CommentImage.create({ name: file.key });
 
     res.status(201).json(image);
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+module.exports.uploadAvatarPhoto = async (req, res, next) => {
+  try {
+    const { file } = req;
+    console.log('file', file);
+
+    const { refreshToken } = req.cookies;
+
+    const userData = await userService.findUser(refreshToken);
+    console.log('userData', userData);
+
+    if (!file || !file.key) {
+      return res.status(400).json({ message: 'No files provided' });
+    }
+
+    const updatedUser = await User.update(
+      { avatar: file.key },
+      {
+        where: { id: userData.user.id },
+        returning: true,
+        raw: true,
+        plain: true,
+      },
+    );
+    console.log('updatedUser', updatedUser[1]);
+    if (updatedUser[0] === 0) {
+      return res.status(400).json({ message: 'Ошибка при обновлении аватара' });
+    }
+
+    res
+      .status(201)
+      .json({ message: 'Аватар успешно обновлен', userData: updatedUser[1] });
   } catch (err) {
     console.error(err);
     next(err);

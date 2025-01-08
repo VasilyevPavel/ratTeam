@@ -9,6 +9,7 @@ const {
   getPostPhotos,
   uploadCommentPhoto,
   deleteCommentPhoto,
+  uploadAvatarPhoto,
 } = require('../controllers/image-controller');
 
 module.exports = imageRouter
@@ -23,6 +24,12 @@ module.exports = imageRouter
     setFolderName('comment'),
     upload.single('photo'),
     uploadCommentPhoto,
+  )
+  .post(
+    '/upload-avatar-photo',
+    setFolderName('avatar'),
+    upload.single('photo'),
+    uploadAvatarPhoto,
   )
   .delete('/delete-comment-photo/:id', deleteCommentPhoto)
   .get('/get-post-photos/:id', getPostPhotos)
